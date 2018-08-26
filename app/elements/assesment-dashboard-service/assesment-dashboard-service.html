@@ -1,0 +1,557 @@
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="assesment-dashboard-service">
+  <template>
+    <style>
+    </style>
+    <div>
+      <iron-ajax
+        method="post"
+        id="fetchbranchajax"
+        url="{{fetchbranchurl}}"
+        params="{{fetchbranchparam}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchbranchResponse"
+        debounce-duration="300"
+        > 
+      <iron-ajax
+        method="post"
+        id="fetchsubjectajax"
+        url="{{fetchsubjecturl}}"
+        params="{{fetchsubjectparam}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchsubjectResponse"
+        debounce-duration="300"
+        > 
+      <iron-ajax
+        method="post"
+        id="fetchgradeajax"
+        url="{{fetchgradeurl}}"
+        params="{{fetchgradeparam}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchgradeResponse"
+        debounce-duration="300"
+        > 
+      <iron-ajax
+        method="post"
+        id="fetchsectionajax"
+        url="{{fetchsectionurl}}"
+        params="{{fetchsectionparam}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchsectionResponse"
+        debounce-duration="300"
+        >  
+      <iron-ajax
+        method="post"
+        id="fetchstudnameajax"
+        url="{{fetchstudnameurl}}"
+        params="{{fetchstudnameparam}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchstudnameResponse"
+        debounce-duration="300"
+        > 
+      <iron-ajax
+        method="post"
+        id="fetchdashboardinfoajax"
+        url="{{fetchdashboardinfourl}}"
+        params="{{fetchdashboardinfoparam}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchdashboardinfoResponse"
+        debounce-duration="300"
+        > 
+        <iron-ajax
+        method="post"
+        id="fetchdashboardinfoajax1"
+        url="{{fetchdashboardinfourl1}}"
+        params="{{fetchdashboardinfoparam1}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchdashboardinfoResponse1"
+        debounce-duration="300"
+        > 
+        <iron-ajax
+        method="post"
+        id="fetchdashboardinfoajax2"
+        url="{{fetchdashboardinfourl2}}"
+        params="{{fetchdashboardinfoparam2}}"
+        handle-as="json"
+        content-type="application/json"
+        on-response="fetchdashboardinfoResponse2"
+        debounce-duration="300"
+        >        
+    </div>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+    Polymer({
+      is: 'assesment-dashboard-service',
+      FnFetchBranchService:function(){
+        this.fetchbranchurl=sessionStorage.getItem("addrinfo")+"/performance-fetchbranch-service";
+        this.$.fetchbranchajax.generateRequest();
+      },
+      fetchbranchResponse:function(e){
+        var arr=e.detail.response.returnval;
+        var newarr=[];
+        var obj={"id":"all","name":"All"};
+        newarr.push(obj);
+        for(var i=0;i<arr.length;i++){
+          newarr.push(arr[i]);
+        }
+        document.querySelector('assesment-dashboard-rootcard').brancharr=newarr;
+      },
+      FnFetchGrade:function(schoolid,academicyear){
+        this.fetchgradeurl=sessionStorage.getItem("addrinfo")+"/performance-fetchgrade-service";
+        var obj={"schoolid":""};
+        obj.schoolid=schoolid;
+        obj.academicyear=academicyear;        
+        this.fetchgradeparam= obj;
+        this.$.fetchgradeajax.generateRequest();
+      },
+      fetchgradeResponse:function(e){
+        var arr=e.detail.response.returnval;
+        var newarr=[];
+        var obj={"grade_id":"all","grade_name":"All"};
+        newarr.push(obj);
+        for(var i=0;i<arr.length;i++){
+          newarr.push(arr[i]);
+        }
+        document.querySelector('assesment-dashboard-rootcard').gradearr=newarr;
+      },
+      FnFetchSection:function(schoolid,academicyear,gradeid){
+        this.fetchsectionurl=sessionStorage.getItem("addrinfo")+"/performance-fetchsection-service";
+        var obj={"schoolid":""};
+        obj.schoolid=schoolid;
+        obj.academicyear=academicyear;             
+        obj.gradeid=gradeid;
+        this.fetchsectionparam= obj;
+        this.$.fetchsectionajax.generateRequest();
+      },
+      fetchsectionResponse:function(e){
+        var arr=e.detail.response.returnval;
+        var newarr=[];
+        var obj={"section_id":"All","section_name":"all"};
+        newarr.push(obj);
+        for(var i=0;i<arr.length;i++){
+          arr[i].section_id=(arr[i].section_id).charAt(0).toUpperCase()+(arr[i].section_id).substring(1);
+          newarr.push(arr[i]);
+        }
+        document.querySelector('assesment-dashboard-rootcard').sectionarr=newarr;
+      },
+      callFetchstudentnameService:function(schoolid,academicyear,gradeid,gradename,sectionid,sectionname){
+        this.fetchstudnameurl=sessionStorage.getItem("addrinfo")+"/fetchstudentname-service";
+        var obj={"scoolid":"","roleid":"","grade":"","section":""};
+        obj.roleid=sessionStorage.getItem("curr_sess_loggedroleid");
+        obj.schoolid=schoolid;
+        obj.grade=gradeid;
+        obj.section=sectionid;
+        obj.academicyear=academicyear;      
+        this.fetchstudnameparam=obj;
+        this.$.fetchstudnameajax.generateRequest();
+      },
+      fetchstudnameResponse:function(e){
+        var arr=e.detail.response.returnval;
+        var newarr=[];
+        var obj={"id":"all","student_name":"All"};
+        newarr.push(obj);
+        for(var i=0;i<arr.length;i++){
+          newarr.push(arr[i]);
+        }
+        document.querySelector('assesment-dashboard-rootcard').studentarr=newarr;
+      },
+      FnFetchSubject:function(schoolid,academicyear,gradeid){
+        this.fetchsubjecturl=sessionStorage.getItem("addrinfo")+"/performance-fetchsubject-service";
+        var obj={"schoolid":""};
+        obj.schoolid=schoolid;
+        obj.academicyear=academicyear;             
+        obj.gradeid=gradeid;
+        this.fetchsubjectparam= obj;
+        this.$.fetchsubjectajax.generateRequest();
+      },
+      fetchsubjectResponse:function(e){
+        var arr=e.detail.response.returnval;
+        var newarr=[];
+        var obj={"subject_id":"all","subject_name":"All"};
+        newarr.push(obj);
+        for(var i=0;i<arr.length;i++){
+          newarr.push(arr[i]);
+        }
+        document.querySelector('assesment-dashboard-rootcard').subjectarr=e.detail.response.returnval;
+      },
+       callFetchDashboardInfo:function(schoolid,academicyear,gradeid,gradename,sectionid,sectionname,studentid,studentname){
+        this.fetchdashboardinfourl=sessionStorage.getItem("addrinfo")+"/fetchdashboardinfo-service";
+        var obj={"schoolid":""};
+        obj.schoolid=schoolid;
+        obj.academicyear=academicyear;        
+        obj.gradeid=gradeid;
+        obj.gradename=gradename;
+        obj.sectionid=sectionid;
+        obj.sectionname=sectionname;
+        obj.studentid=studentid;
+        this.fetchdashboardinfoparam= obj;
+        this.$.fetchdashboardinfoajax.generateRequest();
+      },
+      fetchdashboardinfoResponse:function(e){
+        var term=e.detail.response.term;
+        var span=e.detail.response.termspan;
+        var termasses=e.detail.response.termasses;
+        var student=e.detail.response.student;
+        var mark=e.detail.response.mark;
+        var assesment=e.detail.response.assesment;
+        var acasses=e.detail.response.acasses;
+        var tot=0;
+        for(var i=0;i<assesment.length;i++){
+          tot++;
+        }
+        var percent=85;
+        var width=percent/tot;
+        var titlearr=[];
+        var temp=[];
+        var ass=[];
+        var ass1=[];
+          for(var i=0;i<span.length;i++){            
+           var obj={};
+           obj.spancount=span[i].count;
+           obj.width=parseInt(span[i].count)*width;
+           obj.assesmentid=span[i].term_id;           
+           obj.assesment=(span[i].term_id).charAt(0).toUpperCase()+(span[i].term_id).substring(1);           
+           temp.push(obj);
+          }
+          titlearr.push({"colorcode":"#E8F6F3","sno":"","studentid":"","academicyear":"","grade":"","studentname":"","titlearr":temp});
+          temp=[];
+
+        var acyear=[];  
+        for(var i=0;i<student.length;i++){
+          acyear.push(student[i].academic_year);
+        }
+        for(var i=0;i<termasses.length;i++){
+          var obj={};
+          obj.spancount=1;
+          obj.width=width;
+          obj.assesment=(termasses[i].assesment_id).charAt(0).toUpperCase()+(termasses[i].assesment_id).substring(1);           
+          obj.assesmentid=termasses[i].assesment_id;  
+          ass.push(termasses[i].term_id+termasses[i].assesment_id);          
+          temp.push(obj);
+        }
+        titlearr.push({"colorcode":"#EAEDED","sno":"S.No","studentid":"Student Id","academicyear":"Year","grade":"Grade","studentname":"Student Name","titlearr":temp});
+        temp=[];
+        var inarr=[];
+
+        for(var x=0;x<acyear.length;x++){
+          var temp1=[];
+          temp=[];
+          var id=""; 
+          var name="";
+          var grade="";
+        for(var i=0;i<mark.length;i++){
+
+          if(acyear[x].toLowerCase()==mark[i].academic_year.toLowerCase()){
+          id=mark[i].student_id;
+          name=mark[i].student_name;
+          grade=mark[i].grade_name;
+          var f=0;
+          for(var j=0;j<termasses.length;j++){
+            if(mark[i].term_id.toLowerCase()==termasses[j].term_id.toLowerCase()&&mark[i].subject_id.toLowerCase()==termasses[j].subject_id.toLowerCase()&&mark[i].assesment_id.toLowerCase()==termasses[j].assesment_id.toLowerCase()){
+              f=1;
+              var obj={};
+              obj.spancount=1;
+              obj.width=width;
+              obj.assesmentid=mark[i].academic_year+mark[i].term_id+mark[i].assesment_id;           
+              obj.assesment=mark[i].mark+" - "+mark[i].level;     
+              obj.score=  mark[i].mark;    
+              temp1.push(obj);
+            }
+          }      
+          }          
+        }
+        for(var s=0;s<ass.length;s++){
+          if(x==0)
+          ass[s]=acyear[x]+ass[s];
+          else{
+          ass[s]=acyear[x]+ass[s].substring(9);  
+          }
+        }
+        var year="";
+        var flag=0;
+        for(var z=0;z<ass.length;z++){
+          var c=0;
+        if(acyear[x]==ass[z].substring(0,9)){
+          for(var y=0;y<temp1.length;y++){
+            if(temp1[y].assesmentid.substring(0,9)==ass[z].substring(0,9)){
+            if(ass[z].toLowerCase()==temp1[y].assesmentid.toLowerCase()){
+              c=1;
+              temp.push(temp1[y]);
+            }            
+            }
+          }
+          if(c==0){
+              var obj={};
+              obj.spancount=1;
+              obj.width=width;
+              obj.assesment="";       
+              obj.score=0;    
+              temp.push(obj);
+            }
+          }
+      }
+        titlearr.push({"sno":x+1,"studentid":id,"academicyear":acyear[x],"grade":grade,"studentname":name,"titlearr":temp});
+        temp=[];
+        temp1=[];
+        }
+        // alert(JSON.stringify(titlearr));
+        document.querySelector('assesment-dashboard-rootcard').hidestudentlevelcard=false;
+        document.querySelector('assesment-dashboard-rootcard').reportarr=titlearr;  
+        // document.querySelector('assesment-dashboard-homecard').FnComparearr(titlearr);        
+      },
+      callFetchDashboardInfo1:function(schoolid,academicyear,gradeid,gradename,sectionid,sectionname,studentid,studentname){
+        this.fetchdashboardinfourl1=sessionStorage.getItem("addrinfo")+"/fetchdashboardinfo-service1";
+        var obj={"schoolid":""};
+        obj.schoolid=schoolid;
+        obj.academicyear=academicyear;        
+        obj.gradeid=gradeid;
+        obj.gradename=gradename;
+        obj.sectionid=sectionid;
+        obj.sectionname=sectionname;
+        obj.studentid=studentid;
+        this.fetchdashboardinfoparam1= obj;
+        this.$.fetchdashboardinfoajax1.generateRequest();
+      },
+      fetchdashboardinfoResponse1:function(e){
+        var term=e.detail.response.term;
+        var span=e.detail.response.termspan;
+        var termasses=e.detail.response.termasses;
+        var student=e.detail.response.student;
+        var mark=e.detail.response.mark;
+        var assesment=e.detail.response.assesment;
+        var acasses=e.detail.response.acasses;
+        var tot=0;
+        for(var i=0;i<assesment.length;i++){
+          tot++;
+        }
+        var percent=85;
+        var width=percent/tot;
+        var titlearr=[];
+        var temp=[];
+        var ass=[];
+        var ass1=[];
+          for(var i=0;i<span.length;i++){            
+           var obj={};
+           obj.spancount=span[i].count;
+           obj.width=parseInt(span[i].count)*width;
+           obj.assesmentid=span[i].term_id;           
+           // obj.assesment=span[i].term_id;           
+           obj.assesment=(span[i].term_id).charAt(0).toUpperCase()+(span[i].term_id).substring(1);
+           temp.push(obj);
+          }
+          titlearr.push({"colorcode":"#E8F6F3","sno":"","studentid":"","academicyear":"","grade":"","studentname":"","titlearr":temp});
+          temp=[];
+
+        var acyear=[];  
+        for(var i=0;i<student.length;i++){
+          acyear.push(student[i].academic_year);
+        }
+        for(var i=0;i<termasses.length;i++){
+          var obj={};
+          obj.spancount=1;
+          obj.width=width;
+          obj.assesment=termasses[i].assesment_id;           
+          // obj.assesmentid=termasses[i].assesment_id;  
+          obj.assesment=(termasses[i].assesment_id).charAt(0).toUpperCase()+(termasses[i].assesment_id).substring(1); 
+          ass.push(termasses[i].term_id+termasses[i].assesment_id);          
+          temp.push(obj);
+        }
+        titlearr.push({"colorcode":"#EAEDED","sno":"S.No","studentid":"Student Id","academicyear":"Year","grade":"Grade","studentname":"Student Name","titlearr":temp});
+        temp=[];
+        var inarr=[]; 
+        for(var x=0;x<acyear.length;x++){
+          var temp1=[];
+          temp=[];
+          var id=""; 
+          var name="";
+          var grade="";
+        for(var i=0;i<mark.length;i++){
+          if(acyear[x].toLowerCase()==mark[i].academic_year.toLowerCase()){
+          var f=0;
+          id=mark[i].student_id;
+          name=mark[i].student_name;
+          grade=mark[i].grade_name;
+          for(var j=0;j<termasses.length;j++){
+            if(mark[i].term_id.toLowerCase()==termasses[j].term_id.toLowerCase()&&mark[i].subject_id.toLowerCase()==termasses[j].subject_id.toLowerCase()&&mark[i].assesment_id.toLowerCase()==termasses[j].assesment_id.toLowerCase()){
+              f=1;
+              var obj={};
+              obj.spancount=1;
+              obj.width=width;
+              obj.assesmentid=mark[i].academic_year+mark[i].term_id+mark[i].assesment_id;           
+              obj.assesment=mark[i].mark+" - "+mark[i].level;           
+              temp1.push(obj);
+            }
+          }      
+          }          
+        }
+        for(var s=0;s<ass.length;s++){
+          if(x==0)
+          ass[s]=acyear[x]+ass[s];
+          else{
+          ass[s]=acyear[x]+ass[s].substring(9);  
+          }
+        }
+        var year="";
+        var flag=0;
+        for(var z=0;z<ass.length;z++){
+          var c=0;
+        if(acyear[x]==ass[z].substring(0,9)){
+          for(var y=0;y<temp1.length;y++){
+            if(temp1[y].assesmentid.substring(0,9)==ass[z].substring(0,9)){
+            if(ass[z].toLowerCase()==temp1[y].assesmentid.toLowerCase()){
+              c=1;
+              temp.push(temp1[y]);
+            }            
+            }
+          }
+          if(c==0){
+              var obj={};
+              obj.spancount=1;
+              obj.width=width;
+              obj.assesment="";           
+              temp.push(obj);
+            }
+          }
+      }
+        titlearr.push({"sno":x+1,"studentid":id,"academicyear":acyear[x],"grade":grade,"studentname":name,"titlearr":temp});
+        temp=[];
+        temp1=[];
+        }
+        document.querySelector('assesment-dashboard-rootcard').hidestudentlevelcard=false;
+        document.querySelector('assesment-dashboard-rootcard').reportarr1=titlearr;        
+      },
+      callFetchDashboardInfo2:function(schoolid,academicyear,gradeid,gradename,sectionid,sectionname,studentid,studentname){
+        this.fetchdashboardinfourl2=sessionStorage.getItem("addrinfo")+"/fetchdashboardinfo-service2";
+        var obj={"schoolid":""};
+        obj.schoolid=schoolid;
+        obj.academicyear=academicyear;        
+        obj.gradeid=gradeid;
+        obj.gradename=gradename;
+        obj.sectionid=sectionid;
+        obj.sectionname=sectionname;
+        obj.studentid=studentid;
+        this.fetchdashboardinfoparam2= obj;
+        this.$.fetchdashboardinfoajax2.generateRequest();
+      },
+      fetchdashboardinfoResponse2:function(e){
+        var term=e.detail.response.term;
+        var span=e.detail.response.termspan;
+        var termasses=e.detail.response.termasses;
+        var student=e.detail.response.student;
+        var mark=e.detail.response.mark;
+        var assesment=e.detail.response.assesment;
+        var acasses=e.detail.response.acasses;
+        var tot=0;
+        for(var i=0;i<assesment.length;i++){
+          tot++;
+        }
+        var percent=85;
+        var width=percent/tot;
+        var titlearr=[];
+        var temp=[];
+        var ass=[];
+        var ass1=[];
+          for(var i=0;i<span.length;i++){            
+           var obj={};
+           obj.spancount=span[i].count;
+           obj.width=parseInt(span[i].count)*width;
+           obj.assesmentid=span[i].term_id;           
+           // obj.assesment=span[i].term_id;           
+           obj.assesment=(span[i].term_id).charAt(0).toUpperCase()+(span[i].term_id).substring(1);
+           temp.push(obj);
+          }
+          titlearr.push({"colorcode":"#E8F6F3","sno":"","studentid":"","academicyear":"","grade":"","studentname":"","titlearr":temp});
+          temp=[];
+
+        var acyear=[];  
+        for(var i=0;i<student.length;i++){
+          acyear.push(student[i].academic_year);
+        }
+        for(var i=0;i<termasses.length;i++){
+          var obj={};
+          obj.spancount=1;
+          obj.width=width;
+          obj.assesment=termasses[i].assesment_id;           
+          // obj.assesmentid=termasses[i].assesment_id;  
+          obj.assesment=(termasses[i].assesment_id).charAt(0).toUpperCase()+(termasses[i].assesment_id).substring(1); 
+          ass.push(termasses[i].term_id+termasses[i].assesment_id);          
+          temp.push(obj);
+        }
+        titlearr.push({"colorcode":"#EAEDED","sno":"S.No","studentid":"Student Id","academicyear":"Year","grade":"Grade","studentname":"Student Name","titlearr":temp});
+        temp=[];
+        var inarr=[]; 
+        var id=""; 
+          var name="";
+          var grade="";
+        for(var x=0;x<acyear.length;x++){
+          var temp1=[];
+          temp=[];
+        for(var i=0;i<mark.length;i++){
+          if(acyear[x].toLowerCase()==mark[i].academic_year.toLowerCase()){
+          var f=0;
+          id=mark[i].student_id;
+          name=mark[i].student_name;
+          grade=mark[i].grade_name;
+          for(var j=0;j<termasses.length;j++){
+            if(mark[i].term_id.toLowerCase()==termasses[j].term_id.toLowerCase()&&mark[i].subject_id.toLowerCase()==termasses[j].subject_id.toLowerCase()&&mark[i].assesment_id.toLowerCase()==termasses[j].assesment_id.toLowerCase()){
+              f=1;
+              var obj={};
+              obj.spancount=1;
+              obj.width=width;
+              obj.assesmentid=mark[i].academic_year+mark[i].term_id+mark[i].assesment_id;           
+              obj.assesment=mark[i].mark+" - "+mark[i].level;           
+              temp1.push(obj);
+            }
+          }      
+          }          
+        }
+        for(var s=0;s<ass.length;s++){
+          if(x==0)
+          ass[s]=acyear[x]+ass[s];
+          else{
+          ass[s]=acyear[x]+ass[s].substring(9);  
+          }
+        }
+        var year="";
+        var flag=0;
+        for(var z=0;z<ass.length;z++){
+          var c=0;
+        if(acyear[x]==ass[z].substring(0,9)){
+          for(var y=0;y<temp1.length;y++){
+            if(temp1[y].assesmentid.substring(0,9)==ass[z].substring(0,9)){
+            if(ass[z].toLowerCase()==temp1[y].assesmentid.toLowerCase()){
+              c=1;
+              temp.push(temp1[y]);
+            }            
+            }
+          }
+          if(c==0){
+              var obj={};
+              obj.spancount=1;
+              obj.width=width;
+              obj.assesment="";           
+              temp.push(obj);
+            }
+          }
+      }
+        titlearr.push({"sno":x+1,"studentid":id,"academicyear":acyear[x],"grade":grade,"studentname":name,"titlearr":temp});
+        temp=[];
+        temp1=[];
+        }
+        document.querySelector('assesment-dashboard-rootcard').hidestudentlevelcard=false;
+        document.querySelector('assesment-dashboard-rootcard').reportarr2=titlearr;        
+      }
+    });
+  })();
+  </script>
+</dom-module>

@@ -1,0 +1,516 @@
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="assesment-dashboard-homecard">
+  <template>
+    <style>
+    .outcard{
+        @apply(--layout-vertical);
+    }
+    .drop{        
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+        border-bottom: 1px solid #dedede;
+    }
+    .dropp{
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+    }
+    paper-dropdown-menu{
+      width: 15%;
+      margin-left: 3%;
+      --paper-input-container-label: { color: red };
+      text-align:center;
+    }
+    paper-input{
+      margin-left: 5%;
+    }
+    .drop1,.drop2
+    {
+      @apply(--layout-vertical);
+    }
+    .indrop{     
+        width: 100%;   
+        @apply(--layout-horizontal);
+        border-bottom: 1px solid #dedede;
+    }
+    h3{
+        color: #111AD9  ;
+      }
+       #dynamicspinner{
+      margin: 0;
+      padding: 0;
+      border: none;
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+     iron-icon.tiny {
+          --iron-icon-height: 12px;
+          --iron-icon-width: 12px;
+          margin-top: 2%;
+          --iron-icon-fill-color: #111AD9;
+      }
+      assesment-performance-student-list{
+        @apply(--layout-vertical);
+        width: 100%;
+      }
+      .incard{
+        @apply(--layout-horizontal);
+        width: 100%;
+      }
+      .cardd{
+        @apply(--layout-vertical);
+        width: 100%;
+        margin-left: 7%;
+      }
+      h3{
+        color: #111AD9;
+      }
+      #dialogstudentlist{
+        width: 90%;
+      }
+      .downloaddiv{
+        text-align: right;
+      }
+      paper-dialog{
+        border-radius: 2%;
+      }
+      #exceptionreportdynamicspinner{
+      margin: 0;
+      padding: 0;
+      border: none;
+      background-color: transparent;
+      box-shadow: none;
+    }
+    assesment-reporttype-card{
+      margin-left: 2%;
+    }
+    table, td, th {
+    border: 1px solid #dedede;
+    color: #1B4F72;
+    }
+    </style>
+    <div class="spinner"><paper-dialog modal id="exceptionreportdynamicspinner" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop><paper-spinner active></paper-spinner>
+    <h4>{{spinnermsg}}</h4></paper-dialog></div>
+    <div class='outcard'>
+    <div class='dropp'>
+    <template is="dom-repeat" items="{{reporttypearr}}">
+      <assesment-reporttype-card typeid="{{item.type_id}}" typename="{{item.type_name}}"></assesment-reporttype-card>
+    </template>  
+    </div>
+    <br>
+    <div class='drop' hidden$="{{hidedropdown}}">
+      <paper-dropdown-menu hidden$="{{hideschooldropdown}}" id="sspthcbranch" label="Select Branch" disabled="{{read}}" required>
+        <paper-menu id="adspthcbranch" class="dropdown-content"  on-iron-select="FnSelectBranch"  attr-for-selected="value" required>     
+          <template is="dom-repeat" items="{{brancharr}}">
+            <paper-item value="{{item.id}}">{{item.name}}</paper-item>
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
+      <paper-dropdown-menu hidden$="{{hideacyeardropdown}}" id="sspthcacademicyear" label="Select Academic Year" disabled="{{read}}" required>
+        <paper-menu id="adspthcacademicyear" class="dropdown-content"  on-iron-select="FnSelectAcademicyear"  attr-for-selected="value" required>
+          <template is="dom-repeat" items="{{academicarr}}">
+            <paper-item value="{{item.academic_year}}">{{item.academic_year}}</paper-item>
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
+      <paper-dropdown-menu hidden$="{{hidegradedropdown}}" id="sspthcgrade" label="Select Grade" disabled="{{read}}" required>
+        <paper-menu id="adspthcgrade" class="dropdown-content"  on-iron-select="FnSelectGrade"  attr-for-selected="value" required>     
+          <template is="dom-repeat" items="{{gradearr}}">
+            <paper-item value="{{item.grade_id}}">{{item.grade_name}}</paper-item>
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
+      <paper-dropdown-menu hidden$="{{hidesectiondropdown}}" id="sspthcsection" label="Select Section" disabled="{{read}}" required>
+        <paper-menu id="adspthcsection" class="dropdown-content"  on-iron-select="FnSelectSection"  attr-for-selected="value" required>
+          <template is="dom-repeat" items="{{sectionarr}}">
+            <paper-item value="{{item.section_name}}">{{item.section_id}}</paper-item>
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
+      <paper-dropdown-menu hidden$="{{hidestudentname}}" id="sspthcstudent" label="Select Student" disabled="{{read}}" required>
+        <paper-menu id="adspthcstudent" class="dropdown-content"  on-iron-select="FnSelectStudent"  attr-for-selected="value" required>
+          <template is="dom-repeat" items="{{studentarr}}">
+            <paper-item value="{{item.id}}">{{item.student_name}}</paper-item>
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
+      <h4 style="margin-left: 2%;margin-top: 2%;">ENRNO: {{enrno}}</h4>
+      <div hidden>
+      <paper-input label="Enter Student Name" is="" value="{{value}}" on-keydown="FnInputChanged" hidden$="{{hidestudentname}}"></paper-input>
+       <paper-listbox class="dropdown-content" id="searchfordashboard" on-iron-select="FnSelectstudinfo">
+         <template is="dom-repeat" items="{{itemArray}}" as="item">
+         <paper-item value="{{item.itemid}}">{{item.itemdes}}</paper-item>
+        </template>
+      </paper-listbox>
+      </div>
+      
+    </div>
+    </div>
+
+    <div class="downloaddiv" hidden>
+    <paper-icon-button  id="download" icon="icons:file-download" onclick="performancereportexportToExcel()"></paper-icon-button>
+      <paper-tooltip for="download">{{downloadlabel}}</paper-tooltip>      
+      ({{downloadlabel}})
+    </div>
+
+    <center hidden>
+    <h3>Total number of students: {{total}}</h3>
+    </center>
+
+    <div hidden$="{{hidetitle}}">
+    <div class="container" hidden$="{{hideeng}}" style="width: 300;margin-left: 5%;">
+      <div id="chartContainer1" ></div>      
+    </div> 
+      <!-- <assesment-dashboard-itemcard></assesment-dashboard-itemcard> -->
+      <h4>Subject: English</h4>
+      <table cellpadding="5" id="PerformanceReportDataTableIdd" style="border-collapse: collapse;width: 100%;" border="1">
+      <template is="dom-repeat" items="{{reportarr}}">
+      <tr style="text-align: center;background-color:{{item.colorcode}}"><th width="2%">{{item.sno}}</th>
+      <!-- <th width="8%">{{item.studentid}}</th><th width="12%">{{item.studentname}}</th> -->
+      <!-- <th width="10%">{{item.status}}</th> -->
+      <th width="8%">{{item.academicyear}}</th><th width="5%">{{item.grade}}</th>
+      <template is="dom-repeat" items="{{item.titlearr}}" as="i">
+        <th colspan$="{{i.spancount}}" width$="{{i.width}}">{{i.assesment}}</th>
+      </template>
+      <!-- <th>{{item.legend}}</th><th>{{item.level}}</th> -->
+      </tr>
+      </template>
+    </table>
+    <br><br>
+    <h4>Subject: Mathematics</h4>
+    <table cellpadding="5" id="PerformanceReportDataTableIdd" style="border-collapse: collapse;width: 100%;" border="1">
+      <template is="dom-repeat" items="{{reportarr1}}">
+      <tr style="text-align: center;background-color:{{item.colorcode}}"><th width="2%">{{item.sno}}</th>
+      <!-- <th width="8%">{{item.studentid}}</th><th width="12%">{{item.studentname}}</th> -->
+      <!-- <th width="10%">{{item.status}}</th> -->
+      <th width="8%">{{item.academicyear}}</th><th width="5%">{{item.grade}}</th>
+      <template is="dom-repeat" items="{{item.titlearr}}" as="i">
+        <th colspan$="{{i.spancount}}" width$="{{i.width}}">{{i.assesment}}</th>
+      </template>
+      <!-- <th>{{item.legend}}</th><th>{{item.level}}</th> -->
+      </tr>
+      </template>
+    </table>
+    <br><br>
+    <h4>Subject: EVS</h4>
+    <table cellpadding="5" id="PerformanceReportDataTableIdd" style="border-collapse: collapse;width: 100%;" border="1">
+      <template is="dom-repeat" items="{{reportarr2}}">
+      <tr style="text-align: center;background-color:{{item.colorcode}}"><th width="2%">{{item.sno}}</th>
+      <!-- <th width="8%">{{item.studentid}}</th><th width="12%">{{item.studentname}}</th> -->
+      <!-- <th width="10%">{{item.status}}</th> -->
+      <th width="8%">{{item.academicyear}}</th><th width="5%">{{item.grade}}</th>
+      <template is="dom-repeat" items="{{item.titlearr}}" as="i">
+        <th colspan$="{{i.spancount}}" width$="{{i.width}}">{{i.assesment}}</th>
+      </template>
+      <!-- <th>{{item.legend}}</th><th>{{item.level}}</th> -->
+      </tr>
+      </template>
+    </table>
+
+    </div>    
+    
+    <performance-report-service id='performancereportservice'></performance-report-service>
+  </template>
+  <script type="text/javascript" src="../../scripts/canvasjs.min.js"></script>
+  <script type="text/javascript">
+  var filename,sheetname;
+  function performancereportexportToExcel(){
+    var htmls = "";
+    var tab_text = '<table border="1px" style="font-size:17px" ">';
+    var textRange; 
+    var j = 0;
+    var tab = document.getElementById('PerformanceReportDataTableIdd1'); // id of table
+    var lines = tab.rows.length;
+  if (lines > 0) {
+        tab_text = tab_text + '<tr bgcolor="#DFDFDF">' + tab.rows[0].innerHTML + '</tr>';
+    }
+  for (j = 1 ; j < lines; j++) {   
+        tab_text = tab_text + "<tr>" + tab.rows[j].innerHTML + "</tr>";
+    }
+    tab_text = tab_text + "</table>";   
+    var uri = 'data:application/vnd.ms-excel;base64,';
+            var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'; 
+            var base64 = function(s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            };
+            var format = function(s, c) {
+                return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+                })
+            };
+         htmls = tab_text
+        filename=filename.replace('.','');
+        sheetname=sheetname.replace('.','');
+            var ctx = {
+                worksheet : sheetname || 'Worksheet',
+                table : htmls
+            }
+        var link = document.createElement("a");
+            link.download = filename;
+            link.href = uri + base64(format(template, ctx));
+            link.click();
+     }
+ </script>  
+  <script>
+  (function() {
+    'use strict';
+    var studentnamearr=[];
+    var engchartarr=[];
+    Polymer({
+      is: 'assesment-dashboard-homecard', 
+     
+      ready:function(){
+        this.hidedropdown=true;
+        this.hideschooldropdown=true;
+        this.hidegradedropdown=true;
+        this.hidesectiondropdown=true;
+        this.hideacyeardropdown=true;
+        this.hidestudentname=true;
+        this.hidetitle=true;
+        this.querySelector('#searchfordashboard').style.visibility='hidden';
+      },    
+      FnDownload:function(){
+        this.exschool=this.schoolid;
+        this.exacademicyear=this.academicyear;
+        this.exgradeid=this.gradeid;
+        this.exgradename=this.gradename;
+        this.exsectionid=this.sectionid;
+        this.exsectionname=this.sectionname;
+        this.$.performancereportservice.Fnfetchexceptionsubjectinfo(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname);
+      },     
+      FnCallService:function(){
+        this.$.performancereportservice.FnFetchReportTypeService();
+      },
+      FnCallSchoolService:function(){
+        if(sessionStorage.getItem("curr_sess_loggedroleid")=='management')
+        this.$.sspthcbranch.hidden=false;
+        if(sessionStorage.getItem("curr_sess_loggedroleid")!='management'){
+        this.schoolid=sessionStorage.getItem("curr_sess_loggedschoolid");
+        localStorage.setItem("curr_sess_schoolid",this.schoolid);
+        this.schoolname=sessionStorage.getItem("curr_sess_loggedschoolname");
+        this.$.sspthcbranch.hidden=true;
+        }
+        this.$.performancereportservice.FnFetchBranchService();
+        this.$.performancereportservice.FnFetchAcademicYear();
+      },
+      FnSelectBranch:function(e){
+        this.hidetitle=true;
+        this.downloadlabel="Please wait";
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.enrno="";
+        document.querySelector('#adspthcacademicyear').selected=-1;
+        document.querySelector('#adspthcgrade').selected=-1;
+        document.querySelector('#adspthcsection').selected=-1;
+        this.schoolid=e.target.selectedItem.value.trim();
+        this.schoolname=e.target.selectedItem.textContent.trim();
+        localStorage.setItem("curr_sess_schoolid",this.schoolid);
+      },
+      FnSelectAcademicyear:function(e){
+        this.hidetitle=true;
+        this.downloadlabel="Please wait";
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.enrno="";
+        document.querySelector('#adspthcgrade').selected=-1;
+        document.querySelector('#adspthcsection').selected=-1;
+        this.academicyear=e.target.selectedItem.textContent.trim();
+        localStorage.setItem("curr_sess_academicyear",this.academicyear);
+        this.$.performancereportservice.FnFetchGrade(this.schoolid,this.academicyear);    
+      },
+      FnSelectGrade:function(e){
+        this.hidetitle=true;
+        this.downloadlabel="Please wait";
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.enrno="";
+        document.querySelector('#adspthcsection').selected=-1;
+        this.gradeid=e.target.selectedItem.value.trim();
+        this.gradename=e.target.selectedItem.textContent.trim();
+        localStorage.setItem("curr_sess_grade",this.gradename);
+        this.$.performancereportservice.FnFetchSection(this.schoolid,this.academicyear,this.gradeid);        
+      },
+      FnSelectSection:function(e){
+        this.hidetitle=true;
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.enrno="";
+        this.sectionid=e.target.selectedItem.value.trim();
+        this.sectionname=e.target.selectedItem.textContent.trim();
+        localStorage.setItem("curr_sess_section",this.sectionname);
+        var sectionnam=(this.sectionname).replace('.','');
+        filename=this.schoolname+"-"+this.academicyear+"-"+this.gradename+"-"+sectionnam;
+        sheetname=this.gradename+"-"+this.sectionname;
+        this.hidedownloadicon=true;
+        this.downloadlabel="Please wait";
+        this.$.performancereportservice.callFetchstudentnameService(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname);
+        // this.FnToggleSpinner(true);
+        // this.spinnermsg="Please wait...";
+        // this.$.performancereportservice.FnFetchExceptionExcelAssesmentInfo(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname);
+        // this.$.performancereportservice.FnFetchExcelAssesmentInfo(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname);
+        // this.$.performancereportservice.FnFetchAssesmentInfo(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname);
+      },
+      FnSelectStudent:function(e){
+        this.studentid=e.target.selectedItem.value;
+        this.studentname=e.target.selectedItem.textContent;
+        this.enrno=this.studentid;
+        this.$.performancereportservice.callFetchDashboardInfo(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname,this.studentid,this.studentname);
+        this.$.performancereportservice.callFetchDashboardInfo1(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname,this.studentid,this.studentname);
+        this.$.performancereportservice.callFetchDashboardInfo2(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname,this.studentid,this.studentname);
+      },
+      FnToggleSpinner:function(flag){
+        this.$.dynamicspinner.opened=flag;
+      },
+      FnRefresh:function(){
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.excelarr=[];
+        localStorage.setItem("curr_sess_assesment","");
+        document.querySelector('#adspthcbranch').selected=-1;
+        document.querySelector('#adspthcacademicyear').selected=-1;
+        document.querySelector('#adspthcgrade').selected=-1;
+        document.querySelector('#adspthcsection').selected=-1;
+        document.querySelector('#adspthcstudent').selected=-1;
+        this.hidetitle=true;
+        this.downloadlabel="Please wait";
+        this.hidedropdown=true;
+        studentnamearr=[];
+        this.enrno="";
+        this.querySelector('#searchfordashboard').style.visibility='hidden';
+      },
+      FnSetReportType:function(typeid,typename){
+        this.FnRefresh();
+        this.typeid=typeid;
+        this.typename=typename;
+        this.hidedropdown=false;
+        if(typeid=="1"){
+          // this.hideschooldropdown=false;
+          this.hidedropdown=true;
+          this.hideacyeardropdown=false;
+          this.hideschooldropdown=true;
+          this.hidegradedropdown=true;
+          this.hidesectiondropdown=true;
+          this.hidestudentname=true;
+        }
+        else if(typeid=="2"){
+          this.hideacyeardropdown=false;
+          this.hideschooldropdown=false;
+          this.hidegradedropdown=true;
+          this.hidesectiondropdown=true;
+          this.hidestudentname=true;
+        }
+        else if(typeid=="3"){
+          this.hideacyeardropdown=false;
+          this.hideschooldropdown=false;
+          this.hidegradedropdown=false;
+          this.hidesectiondropdown=true;
+          this.hidestudentname=true;
+        }
+        else if(typeid=="4"){
+          this.hideacyeardropdown=false;
+          this.hideschooldropdown=false;
+          this.hidegradedropdown=false;
+          this.hidesectiondropdown=false;
+          this.hidestudentname=true;
+        }
+        else if(typeid=="5"){
+          this.hideacyeardropdown=false;
+          this.hideschooldropdown=false;
+          this.hidegradedropdown=false;
+          this.hidesectiondropdown=false;
+          this.hidestudentname=false;          
+        }
+        this.FnCallService();
+        this.FnCallSchoolService();
+      },
+      autocompletearr:function(autocompletearr)
+      {
+        studentnamearr=autocompletearr;
+        // alert(JSON.stringify(autocompletearr));
+      },
+      FnInputChanged:function(e)
+      {     
+       if(e.keyCode==13|| e.keyCode==40)
+       this.querySelector('#searchfordashboard').focus();
+          var arr=[];
+          arr.push({"itemdes":"-----Select-----"});
+          this.querySelector('#searchfordashboard').style.visibility='visible';
+          if(e.keyCode==8){
+            this.itemflag="true";
+            this.itemval="";
+            //alert('yes');
+            var len=(this.value).length;
+            if(len<=1){
+              this.querySelector('#searchfordashboard').style.visibility='hidden';
+              this.itemArray="";
+              this.itemval="";
+            }
+            if(len>1){   
+            this.querySelector('#searchfordashboard').style.visibility='visible';
+              var backsubval=(((this.value).substring(0,(len-1))).trim()).toUpperCase();
+              for(var i=0;i<studentnamearr.length;i++)
+              {
+                var subval=((studentnamearr[i].student_name).trim()).substring(0,backsubval.length);
+                if((subval).toUpperCase()==(backsubval).toUpperCase())
+                {
+                  var obj={"itemdes":"","itemid":""};
+                  obj.itemdes=studentnamearr[i].student_name;
+                  obj.itemid=studentnamearr[i].id;
+                  arr.push(obj);
+                }
+              }
+              this.itemArray=arr;
+             }
+            }
+           if(e.keyCode!=8&& e.keyCode!=16&& e.keyCode!=13 && e.keyCode!=38&&e.keyCode!=40&&e.keyCode!=37&&e.keyCode!=39){
+            if(this.itemflag=="true"){
+              this.itemval = (this.value).toUpperCase()+String.fromCharCode((e.keyCode)).toUpperCase();
+              this.itemflag="false";
+            }
+            else
+            this.itemval = this.value +String.fromCharCode((e.keyCode));
+            if(this.itemval.length>0)
+            {
+              for(var i=0;i<studentnamearr.length;i++){
+                var subval=((studentnamearr[i].student_name).trim()).substring(0,this.itemval.length);
+                if((subval).toUpperCase()==(this.itemval).toUpperCase()){
+                  var obj={"itemdes":"","itemid":""};
+                  obj.itemdes=studentnamearr[i].student_name;
+                  obj.itemid=studentnamearr[i].id;
+                  arr.push(obj);
+                }
+              }
+              if(arr.length>0)
+                this.itemArray=arr;
+              else {
+                var obj={"itemdes":"","itemid":""};
+                  obj.itemdes=studentnamearr[i].student_name;
+                  obj.itemid=studentnamearr[i].id;
+                  arr.push(obj);
+                this.itemArray=arr;
+              }
+            } 
+          }
+        },
+        FnSelectstuinfo:function(e)
+        {
+          this.querySelector('#searchfordashboard').style.visibility='hidden';
+          this.value=e.target.selectedItem.textContent.trim();
+          this.studentid=e.target.selectedItem.value;
+          this.itemArray=[];
+          document.querySelector('#searchfordashboard').selected=-1;
+          this.studid=this.studentid;          
+          this.enrno=this.studentid;
+          alert(this.enrno);
+          // this.$.scorecardservice.Fnfetchstudentacademicyear(this.studentid);
+        }
+    });
+  })();
+  </script>
+</dom-module>

@@ -1,0 +1,42 @@
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="assesment-reporttype-card">
+  <template><h1 hidden>{{typeid}}{{typename}}</h1>
+  <paper-radio-button id="art{{typeid}}" on-change="FnSelecttype">{{typename}}</paper-radio-button>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+    var typeid="",typename="";
+    Polymer({
+      is: 'assesment-reporttype-card',
+      attached:function(){
+        typeid="";
+        typename="";
+      },
+      FnSelecttype:function(e){
+        if(typename==""){
+        if(document.querySelector('#art'+this.typeid).checked==true){
+          typename=this.typename;
+          typeid=this.typeid;
+        }
+        }
+        else{
+          if(typeid!=this.typeid){
+            document.querySelector('#art'+typeid).checked=false;
+            if(document.querySelector('#art'+this.typeid).checked==true){
+             typename=this.typename;
+             typeid=this.typeid;
+            }
+          }
+          else{
+            typeid="";
+            typename="";
+          }
+        }
+      document.querySelector('assesment-dashboard-homecard').FnSetReportType(typeid,typename);    
+      }
+    });
+  })();
+  </script>
+</dom-module>

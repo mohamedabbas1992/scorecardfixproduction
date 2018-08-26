@@ -1,0 +1,209 @@
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="assesment-dashboard-rootcard">
+  <template>
+    <style>
+    .divcard{
+    @apply(--layout-vertical);
+    border: 1px solid #dedede;
+    margin-left: 1.5%;
+    width: 15%;
+    padding-left: 1%;
+    padding-right: 1%;
+    }
+    .container{
+    @apply(--layout-horizontal);  
+    }
+    .divinnercard{
+    @apply(--layout-horizontal);
+    }
+    h4{
+      color: #1B4F72;
+    }    
+    </style>
+    <div class="container">
+      <div class="divcard">
+        <h4>No of student</h4>
+        <div class="divinnercard">
+          <div><img src="../../images/dashboardstudicon.png" height="25px" width="25px"></div>
+          <div style="text-align: right;margin-top: -5%;margin-left: 10%;"><h3>Count</h3></div>
+        </div>
+      </div>
+      <div class="divcard">
+        <h4>Branch</h4>
+        <div class="divinnercard">
+          <div><img src="../../images/dashboardschoolicon.png" height="30px" width="30px"></div>
+          <div style="text-align: right;margin-top: -15%;margin-left: 3%;">
+          <!-- <h3> -->
+          <paper-dropdown-menu id="aadrbranch" label="Branch" disabled="{{read}}" required>
+          <paper-menu id="adrbranch" class="dropdown-content"  on-iron-select="FnSelectBranch"  attr-for-selected="value" required>     
+          <template is="dom-repeat" items="{{brancharr}}">
+            <paper-item value="{{item.id}}">{{item.name}}</paper-item>
+          </template>
+          </paper-menu>
+          </paper-dropdown-menu>
+          <!-- </h3> -->
+          <!-- <h3>School</h3> -->
+          </div>
+        </div>
+      </div>
+      <div class="divcard">
+        <h4>Subject</h4>
+        <div class="divinnercard">
+          <div><img src="../../images/dashboardsubjecticon.png" height="25px" width="25px"></div>
+          <div style="text-align: right;margin-top: -15%;margin-left: 3%;">
+           <paper-dropdown-menu id="aadrsubject" label="Subject" disabled="{{read}}" required>
+          <paper-menu id="adrsubject" class="dropdown-content"  on-iron-select="FnSelectSubject"  attr-for-selected="value" required>
+          <!-- <template is="dom-repeat" items="{{subjectarr}}"> -->
+            <!-- <paper-item value="{{item.subject_id}}">{{item.subject_name}}</paper-item> -->
+            <paper-item value="all">All</paper-item> 
+            <paper-item value="s1">English</paper-item> 
+            <paper-item value="s2">Mathematics</paper-item> 
+            <paper-item value="s4">EVS</paper-item> 
+          <!-- </template> -->
+          </paper-menu>
+          </paper-dropdown-menu>
+          <!-- <h3>Subject</h3> -->
+          </div>
+        </div>
+      </div>
+      <div class="divcard">
+        <h4>Grade</h4>
+        <div class="divinnercard">
+          <div><img src="../../images/dashboardgradeicon.png" height="25px" width="25px"></div>
+          <div style="text-align: right;margin-top: -15%;margin-left: 3%;">
+          <!-- <h3>Grade</h3> -->
+          <!-- <h3> -->
+          <paper-dropdown-menu id="aadrgrade" label="Grade" disabled="{{read}}" required>
+          <paper-menu id="adrgrade" class="dropdown-content"  on-iron-select="FnSelectGrade"  attr-for-selected="value" required>     
+          <template is="dom-repeat" items="{{gradearr}}">
+            <paper-item value="{{item.grade_id}}">{{item.grade_name}}</paper-item>
+          </template>
+          </paper-menu>
+          </paper-dropdown-menu>
+          <!-- </h3> -->
+          </div>
+        </div>
+      </div>
+      <div class="divcard">
+        <h4>Section</h4>
+        <div class="divinnercard">
+          <div><img src="../../images/dashboardsectionicon.png" height="25px" width="25px"></div>
+          <div style="text-align: right;margin-top: -15%;margin-left: 3%;">
+          <!-- <h3>Section</h3> -->
+          <!-- <h3> -->
+          <paper-dropdown-menu id="aadrsection" label="Section" disabled="{{read}}" required>
+          <paper-menu id="adrsection" class="dropdown-content"  on-iron-select="FnSelectSection"  attr-for-selected="value" required>
+          <template is="dom-repeat" items="{{sectionarr}}">
+            <paper-item value="{{item.section_name}}">{{item.section_id}}</paper-item>
+          </template>
+          </paper-menu>
+          </paper-dropdown-menu>
+          <!-- </h3> -->
+          </div>
+        </div>
+      </div>
+      <div class="divcard">
+        <h4>Student</h4>
+        <div class="divinnercard">
+          <div><img src="../../images/dashboardstudsicon.png" height="25px" width="25px"></div>
+          <div style="text-align: right;margin-top: -15%;margin-left: 3%;">
+          <!-- <h3>Student</h3> -->
+          <paper-dropdown-menu id="aadrstudent" label="Student" disabled="{{read}}" required>
+          <paper-menu id="adrstudent" class="dropdown-content"  on-iron-select="FnSelectStudent"  attr-for-selected="value" required>
+          <template is="dom-repeat" items="{{studentarr}}">
+            <paper-item value="{{item.id}}">{{item.student_name}}</paper-item>
+          </template>
+          </paper-menu>
+          </paper-dropdown-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+    <div hidden$="{{hidestudentlevelcard}}">
+      <assesment-dashboard-studentlevel-card reportarr="{{reportarr}}" reportarr1="{{reportarr1}}" reportarr2="{{reportarr2}}"></assesment-dashboard-studentlevel-card>
+    </div>
+    </div>
+    <assesment-dashboard-service id="service"></assesment-dashboard-service>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+    Polymer({
+      is: 'assesment-dashboard-rootcard',
+      ready:function(){
+        this.hidestudentlevelcard=true;
+      },
+      FnCallService:function(){
+        if(sessionStorage.getItem("curr_sess_loggedroleid")=='management')
+        this.$.aadrbranch.hidden=false;
+        if(sessionStorage.getItem("curr_sess_loggedroleid")!='management'){
+        this.schoolid=sessionStorage.getItem("curr_sess_loggedschoolid");
+        localStorage.setItem("curr_sess_schoolid",this.schoolid);
+        this.schoolname=sessionStorage.getItem("curr_sess_loggedschoolname");
+        this.$.aadrranch.hidden=true;
+        }
+        this.$.service.FnFetchBranchService();
+        // this.$.service.FnFetchAcademicYear();
+      },
+      FnSelectBranch:function(e){
+        this.hidetitle=true;
+        this.downloadlabel="Please wait";
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.enrno="";
+        document.querySelector('#adrsubject').selected=-1;
+        document.querySelector('#adrgrade').selected=-1;
+        document.querySelector('#adrsection').selected=-1;
+        this.schoolid=e.target.selectedItem.value.trim();
+        this.schoolname=e.target.selectedItem.textContent.trim();
+        localStorage.setItem("curr_sess_schoolid",this.schoolid);
+        this.FnSelectAcademicyear();
+      },
+      FnSelectAcademicyear:function(){
+        this.academicyear='2018-2019';
+        localStorage.setItem("curr_sess_academicyear",this.academicyear);
+        this.$.service.FnFetchGrade(this.schoolid,this.academicyear);    
+      },
+      FnSelectSubject:function(e){
+
+      },
+      FnSelectGrade:function(e){
+        this.hidetitle=true;
+        this.downloadlabel="Please wait";
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.enrno="";
+        document.querySelector('#adrsection').selected=-1;
+        this.gradeid=e.target.selectedItem.value.trim();
+        this.gradename=e.target.selectedItem.textContent.trim();
+        localStorage.setItem("curr_sess_grade",this.gradename);
+        this.$.service.FnFetchSection(this.schoolid,this.academicyear,this.gradeid);        
+      },
+      FnSelectSection:function(e){
+        this.hidetitle=true;
+        this.assesmentarr=[];
+        this.studentarr=[];
+        this.total="";
+        this.enrno="";
+        this.sectionid=e.target.selectedItem.value.trim();
+        this.sectionname=e.target.selectedItem.textContent.trim();
+        localStorage.setItem("curr_sess_section",this.sectionname);
+        var sectionnam=(this.sectionname).replace('.','');
+        this.$.service.callFetchstudentnameService(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname);
+      },
+      FnSelectStudent:function(e){
+        this.studentid=e.target.selectedItem.value;
+        this.studentname=e.target.selectedItem.textContent;
+        this.$.service.callFetchDashboardInfo(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname,this.studentid,this.studentname);
+        this.$.service.callFetchDashboardInfo1(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname,this.studentid,this.studentname);
+        this.$.service.callFetchDashboardInfo2(this.schoolid,this.academicyear,this.gradeid,this.gradename,this.sectionid,this.sectionname,this.studentid,this.studentname);
+      }
+    });
+  })();
+  </script>
+</dom-module>

@@ -1,0 +1,186 @@
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="assesment-dashboard-studentlevel-card">
+  <template>
+    <style>
+    .outcard{
+        @apply(--layout-vertical);
+    }
+    .drop{        
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+        border-bottom: 1px solid #dedede;
+    }
+    .dropp{
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+    }
+    paper-dropdown-menu{
+      width: 15%;
+      margin-left: 3%;
+      --paper-input-container-label: { color: red };
+      text-align:center;
+    }
+    paper-input{
+      margin-left: 5%;
+    }
+    .drop1,.drop2
+    {
+      @apply(--layout-vertical);
+    }
+    .indrop{     
+        width: 100%;   
+        @apply(--layout-horizontal);
+        border-bottom: 1px solid #dedede;
+    }
+    h3{
+        color: #111AD9  ;
+      }
+       #dynamicspinner{
+      margin: 0;
+      padding: 0;
+      border: none;
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+     iron-icon.tiny {
+          --iron-icon-height: 12px;
+          --iron-icon-width: 12px;
+          margin-top: 2%;
+          --iron-icon-fill-color: #111AD9;
+      }
+      assesment-performance-student-list{
+        @apply(--layout-vertical);
+        width: 100%;
+      }
+      .incard{
+        @apply(--layout-horizontal);
+        width: 100%;
+      }
+      .cardd{
+        @apply(--layout-vertical);
+        width: 100%;
+        margin-left: 7%;
+      }
+      h3{
+        color: #111AD9;
+      }
+      #dialogstudentlist{
+        width: 90%;
+      }
+      .downloaddiv{
+        text-align: right;
+      }
+      paper-dialog{
+        border-radius: 2%;
+      }
+      #exceptionreportdynamicspinner{
+      margin: 0;
+      padding: 0;
+      border: none;
+      background-color: transparent;
+      box-shadow: none;
+    }
+    assesment-reporttype-card{
+      margin-left: 2%;
+    }
+    table, td, th {
+    border: 1px solid #dedede;
+    color: #1B4F72;
+    }
+    </style>
+  
+    <div>
+      <h4>Subject: English</h4>
+      <table cellpadding="5" id="PerformanceReportDataTableIdd" style="border-collapse: collapse;width: 100%;" border="1">
+      <template is="dom-repeat" items="{{reportarr}}">
+      <tr style="text-align: center;background-color:{{item.colorcode}}"><th width="2%">{{item.sno}}</th>
+      <th width="8%">{{item.academicyear}}</th><th width="5%">{{item.grade}}</th>
+      <template is="dom-repeat" items="{{item.titlearr}}" as="i">
+        <th colspan$="{{i.spancount}}" width$="{{i.width}}">{{i.assesment}}</th>
+      </template>
+      </tr>
+      </template>
+    </table>
+    <br><br>
+    <h4>Subject: Mathematics</h4>
+    <table cellpadding="5" id="PerformanceReportDataTableIdd" style="border-collapse: collapse;width: 100%;" border="1">
+      <template is="dom-repeat" items="{{reportarr1}}">
+      <tr style="text-align: center;background-color:{{item.colorcode}}"><th width="2%">{{item.sno}}</th>
+      <th width="8%">{{item.academicyear}}</th><th width="5%">{{item.grade}}</th>
+      <template is="dom-repeat" items="{{item.titlearr}}" as="i">
+        <th colspan$="{{i.spancount}}" width$="{{i.width}}">{{i.assesment}}</th>
+      </template>
+      </tr>
+      </template>
+    </table>
+    <br><br>
+    <h4>Subject: EVS</h4>
+    <table cellpadding="5" id="PerformanceReportDataTableIdd" style="border-collapse: collapse;width: 100%;" border="1">
+      <template is="dom-repeat" items="{{reportarr2}}">
+      <tr style="text-align: center;background-color:{{item.colorcode}}"><th width="2%">{{item.sno}}</th>
+      <th width="8%">{{item.academicyear}}</th><th width="5%">{{item.grade}}</th>
+      <template is="dom-repeat" items="{{item.titlearr}}" as="i">
+        <th colspan$="{{i.spancount}}" width$="{{i.width}}">{{i.assesment}}</th>
+      </template>
+      </tr>
+      </template>
+    </table>
+    </div>   
+    <performance-report-service id='performancereportservice'></performance-report-service>
+  </template>
+  <script type="text/javascript" src="../../scripts/canvasjs.min.js"></script>
+  <script type="text/javascript">
+  var filename,sheetname;
+  function performancereportexportToExcel(){
+    var htmls = "";
+    var tab_text = '<table border="1px" style="font-size:17px" ">';
+    var textRange; 
+    var j = 0;
+    var tab = document.getElementById('PerformanceReportDataTableIdd1'); // id of table
+    var lines = tab.rows.length;
+  if (lines > 0) {
+        tab_text = tab_text + '<tr bgcolor="#DFDFDF">' + tab.rows[0].innerHTML + '</tr>';
+    }
+  for (j = 1 ; j < lines; j++) {   
+        tab_text = tab_text + "<tr>" + tab.rows[j].innerHTML + "</tr>";
+    }
+    tab_text = tab_text + "</table>";   
+    var uri = 'data:application/vnd.ms-excel;base64,';
+            var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'; 
+            var base64 = function(s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            };
+            var format = function(s, c) {
+                return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+                })
+            };
+         htmls = tab_text
+        filename=filename.replace('.','');
+        sheetname=sheetname.replace('.','');
+            var ctx = {
+                worksheet : sheetname || 'Worksheet',
+                table : htmls
+            }
+        var link = document.createElement("a");
+            link.download = filename;
+            link.href = uri + base64(format(template, ctx));
+            link.click();
+     }
+ </script>  
+  <script>
+  (function() {
+    'use strict';
+    var studentnamearr=[];
+    var engchartarr=[];
+    Polymer({
+      is: 'assesment-dashboard-studentlevel-card',      
+      ready:function(){
+      }
+      
+    });
+  })();
+  </script>
+</dom-module>
